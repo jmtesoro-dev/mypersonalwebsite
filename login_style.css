@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* Animatable angle for the spinning gradient ring */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:root {
+  --p-deep: #2e1065; --p-dark: #4c1d95; --p: #7c3aed; --p-light: #c4b5fd; --p-pale: #ede9fe;
+  --g-deep: #022c22; --g-dark: #064e3b; --g: #10b981; --g-light: #6ee7b7;
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ---------- Keyframes ---------- */
+@keyframes spinRing { to { --angle: 360deg; } }
+@keyframes cardIn {
+  0%   { opacity: 0; transform: perspective(900px) rotateX(-35deg) translateY(80px) scale(.8); }
+  100% { opacity: 1; transform: perspective(900px) rotateX(0) translateY(0) scale(1); }
+}
+@keyframes floatY { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+@keyframes shimmer { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+@keyframes aurora { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 100% { transform: translate(4%, -5%) scale(1.15) rotate(6deg); } }
+@keyframes raySwing { 0% { transform: rotate(-5deg); opacity: .65; } 100% { transform: rotate(5deg); opacity: 1; } }
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 6px 0 var(--p-deep), 0 14px 28px rgba(124,58,237,.45), inset 0 1px 0 rgba(255,255,255,.5); }
+  50%      { box-shadow: 0 6px 0 var(--p-deep), 0 14px 44px rgba(196,181,253,.75), inset 0 1px 0 rgba(255,255,255,.5); }
+}
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes fieldIn { from { opacity: 0; transform: translateY(-8px) scale(.94); } to { opacity: 1; transform: none; } }
+
+/* ---------- Body (lock screen) ---------- */
+body {
+  font-family: 'Outfit', 'Trebuchet MS', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 150px 20px 40px;
+  overflow-x: hidden;
+  background: #05020b;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+a, button, label[for="showPassword"], #showPassword { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--g-light); outline-offset: 3px; }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(55vmax 55vmax at 15% 25%, rgba(124, 58, 237, .55), transparent 60%),
+    radial-gradient(50vmax 50vmax at 85% 35%, rgba(16, 185, 129, .33), transparent 60%),
+    radial-gradient(60vmax 60vmax at 50% 105%, rgba(91, 33, 182, .6), transparent 60%),
+    radial-gradient(35vmax 35vmax at 92% 92%, rgba(110, 231, 183, .18), transparent 60%);
+  animation: aurora 16s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  top: -10%;
+  left: -25%;
+  right: -25%;
+  height: 90vh;
+  z-index: -2;
+  pointer-events: none;
+  background: conic-gradient(from 120deg at 50% 0%,
+    transparent 0deg, rgba(196,181,253,.18) 9deg, transparent 18deg,
+    rgba(110,231,183,.12) 30deg, transparent 42deg,
+    rgba(167,139,250,.15) 56deg, transparent 68deg,
+    rgba(110,231,183,.11) 82deg, transparent 96deg,
+    rgba(196,181,253,.13) 108deg, transparent 120deg, transparent 360deg);
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 85%);
+  mask-image: linear-gradient(to bottom, #000, transparent 85%);
+  transform-origin: 50% 0;
+  animation: raySwing 14s ease-in-out infinite alternate;
+}
+
+/* lock-screen clock (added by fx.js) */
+.lock-clock { position: fixed; top: 5vh; left: 0; width: 100%; text-align: center; pointer-events: none; z-index: 2; }
+.lc-time {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.6rem, 8vw, 5rem);
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 1;
+  background: linear-gradient(90deg, var(--p-light), var(--g-light), var(--p-pale), var(--p-light));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 8px 20px rgba(124, 58, 237, .6));
+}
+.lc-date { margin-top: 10px; font-size: .85rem; letter-spacing: .5em; text-transform: uppercase; color: var(--p-pale); }
+
+/* ---------- Glass card ---------- */
+.form-container {
+  position: relative;
+  width: 380px;
+  min-height: 480px;
+  padding: 34px 30px;
+  background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.04)), rgba(12, 6, 26, .5);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, .7),
+    0 0 70px rgba(124, 58, 237, .35),
+    inset 0 1px 0 rgba(255, 255, 255, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .06);
+  text-align: center;
+  color: #ffffff;
+  z-index: 1;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .18s ease-out;
+  animation: cardIn 1s var(--ease) backwards, floatY 6s ease-in-out 1s infinite;
+}
+.form-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--angle), var(--p), var(--g-light), var(--p-light), var(--g), var(--p));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spinRing 5s linear infinite;
+}
+.form-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, 0%), rgba(255,255,255,.2), transparent 50%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.form-container:hover::after { opacity: 1; }
+
+.form-container h2 {
+  margin-bottom: 22px;
+  font-family: 'Cinzel', serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--p-light), var(--g-light), var(--p-pale), var(--p-light));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 16px rgba(124, 58, 237, .6));
+}
+
+/* ---------- Labels & inputs ---------- */
+label {
+  display: block;
+  text-align: left;
+  margin: 10px 0 6px 4px;
+  color: var(--p-light);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 13px 18px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 12px;
+  outline: none;
+  font-family: inherit;
+  font-size: 16px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, .07);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .4);
+  transition: border-color .25s, box-shadow .25s, transform .3s var(--spring), background .25s;
+}
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: var(--g-light);
+  background: rgba(255, 255, 255, .11);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .4), 0 0 0 4px rgba(110, 231, 183, .22), 0 10px 26px rgba(16, 185, 129, .3);
+  transform: translateY(-2px);
+}
+#confirmPassword, #confirmPasswordLabel { animation: fieldIn .4s ease; }
+
+/* ---------- 3D button ---------- */
+.form-container button {
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0 6px;
+  background: linear-gradient(135deg, var(--p-light), var(--p) 55%, var(--p-dark));
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: transform .2s var(--spring), background .3s;
+}
+.form-container button:hover {
+  background: linear-gradient(135deg, var(--g-light), var(--g) 55%, var(--g-dark));
+  animation: none;
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--g-deep), 0 8px 22px rgba(16, 185, 129, .5), inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+.form-container button:active { transform: translateY(6px); box-shadow: 0 0 0 var(--g-deep); }
+
+/* ---------- Messages & links ---------- */
+#errorMessage { color: #f0abfc; margin-top: 8px; font-size: 14px; font-weight: 600; }
+#errorMessage:not(:empty) { animation: shake .4s ease; }
+#storageNote { margin-top: 12px; font-size: 12px; line-height: 1.5; color: #f0abfc; }
+#toggleText { margin-top: 14px; font-size: 15px; color: var(--p-pale); }
+#toggleText a {
+  color: var(--g-light);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(110, 231, 183, .5);
+  transition: color .2s, border-color .2s;
+}
+#toggleText a:hover { color: #fff; border-color: var(--p-light); }
+
+/* ---------- Show Password ---------- */
+.show-password { display: flex; align-items: center; margin: -2px 0 6px 4px; }
+.show-password label { margin: 0; font-size: 13px; font-weight: 500; letter-spacing: .04em; text-transform: none; color: var(--p-pale); }
+.show-password input[type="checkbox"] { margin-right: 8px; width: 18px; height: 18px; accent-color: #10b981; }
+
+@media (max-width: 480px) {
+  body { padding-top: 130px; }
+  .form-container { width: 100%; padding: 28px 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* =========================================================
+   LIGHT MODE (button in the top-right corner; remembered)
+   ========================================================= */
+html { color-scheme: dark; }
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="light"] :focus-visible { outline-color: #059669; }
+html[data-theme="light"] body { background: #f4f0ff; color: #22123f; }
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(55vmax 55vmax at 15% 25%, rgba(167, 139, 250, .55), transparent 60%),
+    radial-gradient(50vmax 50vmax at 85% 35%, rgba(110, 231, 183, .50), transparent 60%),
+    radial-gradient(60vmax 60vmax at 50% 105%, rgba(196, 181, 253, .65), transparent 60%),
+    radial-gradient(35vmax 35vmax at 92% 92%, rgba(16, 185, 129, .22), transparent 60%);
+}
+html[data-theme="light"] body::after { opacity: .55; }
+html[data-theme="light"] .lc-time { background-image: linear-gradient(90deg, #5b21b6, #047857, #7c3aed, #5b21b6); filter: drop-shadow(0 6px 14px rgba(124,58,237,.25)); }
+html[data-theme="light"] .lc-date { color: #3b1a78; }
+html[data-theme="light"] .form-container {
+  background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.5)), rgba(237, 233, 254, .55);
+  color: #22123f;
+  box-shadow: 0 40px 80px rgba(76, 29, 149, .3), 0 0 70px rgba(124, 58, 237, .2), inset 0 1px 0 #fff;
+}
+html[data-theme="light"] .form-container h2 { background-image: linear-gradient(90deg, #5b21b6, #047857, #7c3aed, #5b21b6); filter: drop-shadow(0 4px 10px rgba(124,58,237,.25)); }
+html[data-theme="light"] label { color: #6d28d9; }
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] input[type="password"] {
+  color: #22123f;
+  background: #ffffff;
+  border-color: rgba(76, 29, 149, .25);
+  box-shadow: inset 0 2px 6px rgba(76, 29, 149, .1);
+}
+html[data-theme="light"] input[type="text"]:focus,
+html[data-theme="light"] input[type="password"]:focus { background: #fff; box-shadow: inset 0 2px 6px rgba(76,29,149,.1), 0 0 0 4px rgba(16,185,129,.25), 0 10px 26px rgba(16,185,129,.2); }
+html[data-theme="light"] .show-password label { color: #3b1a78; }
+html[data-theme="light"] #toggleText { color: #3b1a78; }
+html[data-theme="light"] #toggleText a { color: #047857; border-bottom-color: rgba(4, 120, 87, .5); }
+html[data-theme="light"] #toggleText a:hover { color: #5b21b6; border-color: #5b21b6; }
+html[data-theme="light"] #errorMessage { color: #a21caf; }
+
+/* Light / Dark button label (floating button in the corner) */
+.theme-txt::before { content: "Light Mode"; }
+html[data-theme="light"] .theme-txt::before { content: "Dark Mode"; }
+
+/* shown after a successful login */
+#successPanel { display: none; padding: 30px 0 10px; }
+#successPanel p { margin: 4px 0 24px; font-size: 15px; line-height: 1.6; color: #ede9fe; }
+.home-link {
+  display: block;
+  padding: 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .45);
+  background: linear-gradient(135deg, #6ee7b7, #10b981 55%, #064e3b);
+  color: #022c22;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 6px 0 #022c22, 0 14px 26px rgba(16, 185, 129, .35), inset 0 1px 0 rgba(255, 255, 255, .5);
+  transition: transform .2s;
+}
+.home-link:hover { transform: translateY(3px); box-shadow: 0 3px 0 #022c22, 0 8px 18px rgba(16, 185, 129, .4), inset 0 1px 0 rgba(255,255,255,.5); }
+html[data-theme="light"] #successPanel p { color: #3b1a78; }

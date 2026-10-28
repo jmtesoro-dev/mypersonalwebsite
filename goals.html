@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Goals as a Student</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="fx.js" defer></script>
+    <script src="auth.js"></script>
+    <script>
+        // Only logged-in users can see this page
+        if (window.Auth) Auth.requireLogin();
+
+        // Logout with confirmation
+        function confirmLogout(event) {
+            if (event) event.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) return;
+            if (window.Auth) Auth.logout();
+            else window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>My Personal Website</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn active">ABOUT</a>
+                    <div class="dropdown-content">
+                        <a href="skills.html">Skills I'm Developing</a>
+                        <a href="goals.html" class="active">My Goals as a Student</a>
+                        <a href="funfacts.html">Fun Facts About Me</a>
+                    </div>
+                </li>
+                <li><a href="gallery.html">GALLERY</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li class="logout-item"><a href="#" class="logout-button" onclick="confirmLogout(event)">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <div class="menu-right">
+            <button type="button" class="menu-btn theme-btn" id="themeToggle"><span class="theme-ico"></span><span class="theme-txt"></span></button>
+        </div>
+    </header>
+
+    <section id="section2"></section>
+
+    <section id="drop">
+        <h2>My Goals as a Student</h2>
+        <p>Here are the aspirations I’m passionately pursuing!</p>
+
+        <div class="goal-grid">
+            <!-- Click a goal to open it. Only one goal is open at a time. -->
+            <div class="goal-card" onclick="toggleGoalDetails(1)" aria-expanded="false">
+                <div class="goal-header"><strong>Short-Term Goals</strong></div>
+                <p><strong>Mastering programming while learning more about myself.</strong></p>
+                <div class="goal-details" id="goal1-details">
+                    <p>As a student and future front-end developer, my short-term goal is to improve my skills in HTML, CSS, and JavaScript. I want to explore my interests, turn my passion for cute and aesthetic designs into real projects, and build confidence in my profession one website at a time.</p>
+                </div>
+            </div>
+
+            <div class="goal-card" onclick="toggleGoalDetails(2)" aria-expanded="false">
+                <div class="goal-header"><strong>Long-Term Goals</strong></div>
+                <p>Becoming a proficient front-end developer.</p>
+                <div class="goal-details" id="goal2-details">
+                    <p>My long-term goal is to become a skilled front-end developer — my dream profession. I love programming because it lets me be both creative and logical. I want to grow from a curious student into a professional who builds beautiful, useful websites that reflect who I am.</p>
+                </div>
+            </div>
+
+            <div class="goal-card" onclick="toggleGoalDetails(3)" aria-expanded="false">
+                <div class="goal-header"><strong>Personal Development</strong></div>
+                <p>Growing as a person through programming.</p>
+                <div class="goal-details" id="goal3-details">
+                    <p>Programming is not just about my profession, it's about myself. It taught me patience when debugging, confidence when a project works, and enthusiasm to keep learning. My personal goal is to invest in myself — to become more disciplined, creative, and passionate, both in life and in code.</p>
+                </div>
+            </div>
+
+            <div class="goal-card" onclick="toggleGoalDetails(4)" aria-expanded="false">
+                <div class="goal-header"><strong>Career Goals</strong></div>
+                <p>Turning my love for programming into my career.</p>
+                <div class="goal-details" id="goal4-details">
+                    <p>My career goal is to turn my passion for programming into my profession. I want to freelance, build a strong portfolio, and someday have my own creative studio. A career where my self, my interests, and my love for coding all come together — doing what I love every day.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 John Michael Tesoro. All rights reserved.</p>
+    </footer>
+    <div class="footer-divider"></div> <!-- Striped line -->
+
+    <script>
+        // Open one goal at a time: opening a goal closes the others, clicking it again closes it
+        function toggleGoalDetails(number) {
+            var cards = document.querySelectorAll('.goal-card');
+            for (var i = 1; i <= cards.length; i++) {
+                var details = document.getElementById('goal' + i + '-details');
+                var card = cards[i - 1];
+                var shouldOpen = (i === number) && !details.classList.contains('active');
+                details.classList.toggle('active', shouldOpen);
+                card.classList.toggle('open', shouldOpen);
+                card.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+            }
+        }
+    </script>
+</body>
+</html>

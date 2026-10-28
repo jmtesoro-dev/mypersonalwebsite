@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Personal Website</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="fx.js" defer></script>
+    <script src="auth.js"></script>
+    <script>
+        // Only logged-in users can see this page
+        if (window.Auth) Auth.requireLogin();
+
+        // Logout with confirmation
+        function confirmLogout(event) {
+            if (event) event.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) return;
+            if (window.Auth) Auth.logout();
+            else window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body class="contact-background">
+    <header>
+        <h1>My Personal Website</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">ABOUT</a>
+                    <div class="dropdown-content">
+                        <a href="skills.html">Skills I'm Developing</a>
+                        <a href="goals.html">My Goals as a Student</a>
+                        <a href="funfacts.html">Fun Facts About Me</a>
+                    </div>
+                </li>
+                <li><a href="gallery.html">GALLERY</a></li>
+                <li><a href="contact.html" class="active">CONTACT</a></li>
+                <li class="logout-item"><a href="#" class="logout-button" onclick="confirmLogout(event)">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <div class="menu-right">
+            <button type="button" class="menu-btn theme-btn" id="themeToggle"><span class="theme-ico"></span><span class="theme-txt"></span></button>
+        </div>
+    </header>
+
+    <section id="section2"></section>
+
+    <section id="contact">
+        <div class="contact-content">
+            <!-- Contact Form (novalidate: our own messages are shown instead of the browser's) -->
+            <form id="contactForm" class="contact-form" novalidate>
+                <h2>Let's Get in Touch</h2>
+
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Name">
+                <span class="error" id="nameError"></span>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your Email">
+                <span class="error" id="emailError"></span>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" placeholder="Your Message"></textarea>
+                <span class="error" id="messageError"></span>
+
+                <button type="submit"><strong>SEND MESSAGE</strong></button>
+            </form>
+
+            <!-- Contact Details -->
+            <div class="contact-details">
+                <h3>Contact Me</h3>
+                <p><strong>Email Address:</strong> <br> michaeltesoro08@gmail.com</p>
+                <hr>
+                <p><strong>Phone Number:</strong> <br>0910 643 0556</p>
+                <hr>
+                <p><strong>Address:</strong> <br> Pandan, Antique, Philippines</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 John Michael Tesoro. All rights reserved.</p>
+    </footer>
+    <div class="footer-divider"></div> <!-- Striped line -->
+
+    <script>
+        const form = document.querySelector("#contactForm");
+        const nameInput = document.querySelector("#name");
+        const emailInput = document.querySelector("#email");
+        const messageInput = document.querySelector("#message");
+
+        // Check email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // One handler: validate, then "send" only if everything is valid
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            let isValid = true;
+
+            // Clear all previous error messages
+            document.querySelectorAll(".error").forEach(function (errorElement) {
+                errorElement.textContent = "";
+            });
+
+            // Validate Name
+            if (nameInput.value.trim() === "") {
+                document.getElementById("nameError").textContent = "Name is required";
+                isValid = false;
+            }
+
+            // Validate Email
+            if (emailInput.value.trim() === "") {
+                document.getElementById("emailError").textContent = "Email is required";
+                isValid = false;
+            } else if (!validateEmail(emailInput.value.trim())) {
+                document.getElementById("emailError").textContent = "Please enter a valid email";
+                isValid = false;
+            }
+
+            // Validate Message
+            if (messageInput.value.trim() === "") {
+                document.getElementById("messageError").textContent = "Message is required";
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Simulated successful submission
+            if (window.showToast) {
+                window.showToast("Your message has been sent successfully!");
+            } else {
+                alert("Your message has been sent successfully!");
+            }
+            form.reset();
+        });
+    </script>
+</body>
+</html>

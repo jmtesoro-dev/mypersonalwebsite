@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Personal Website</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="fx.js" defer></script>
+    <script src="auth.js"></script>
+    <script>
+        // Only logged-in users can see this page
+        if (window.Auth) Auth.requireLogin();
+
+        // Logout with confirmation
+        function confirmLogout(event) {
+            if (event) event.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) return;
+            if (window.Auth) Auth.logout();
+            else window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>My Personal Website</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">ABOUT</a>
+                    <div class="dropdown-content">
+                        <a href="skills.html">Skills I'm Developing</a>
+                        <a href="goals.html">My Goals as a Student</a>
+                        <a href="funfacts.html">Fun Facts About Me</a>
+                    </div>
+                </li>
+                <li><a href="gallery.html">GALLERY</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li class="logout-item"><a href="#" class="logout-button" onclick="confirmLogout(event)">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <div class="menu-right">
+            <button type="button" class="menu-btn theme-btn" id="themeToggle"><span class="theme-ico"></span><span class="theme-txt"></span></button>
+        </div>
+    </header>
+
+    <section id="section2"></section>
+
+    <div class="slider" id="hero">
+        <div class="slides">
+            <div class="slide active">
+                <img src="me.jpg" alt="Image 1">
+                <div class="text-overlay">
+                    <span class="hero-kicker">Scene 01</span>
+                    <h1>Welcome to my Website!</h1>
+                    <p class="hero-sub">A personal story told in three scenes</p>
+                    <a class="hero-btn" href="#drop">Start Exploring</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="bato.jpg" alt="Image 2">
+                <div class="text-overlay">
+                    <span class="hero-kicker">Scene 02</span>
+                    <h1>Life through my lens</h1>
+                    <p class="hero-sub">Moments captured along the way</p>
+                    <a class="hero-btn" href="gallery.html">View Gallery</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="bg.jpeg" alt="Image 3">
+                <div class="text-overlay">
+                    <span class="hero-kicker">Scene 03</span>
+                    <h1>Connect with me!</h1>
+                    <p class="hero-sub">Let's create something together</p>
+                    <a class="hero-btn" href="contact.html">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-ui">
+            <span class="slide-count" id="slideCount">01 / 03</span>
+            <div class="slider-dots" id="sliderDots"></div>
+            <button type="button" class="slider-play" id="sliderPlay" aria-label="Pause slideshow">Pause</button>
+        </div>
+        <div class="slider-progress"><span id="sliderBar"></span></div>
+    </div>
+
+    <!-- Scrolling ticker band -->
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+            <span>Front-End Development</span><span>Responsive Design</span><span>Graphic Design</span><span>Public Speaking</span><span>Problem Solving</span><span>Creative Coding</span>
+            <span>Front-End Development</span><span>Responsive Design</span><span>Graphic Design</span><span>Public Speaking</span><span>Problem Solving</span><span>Creative Coding</span>
+        </div>
+    </div>
+
+    <section id="drop">
+        <h2>Fun Facts About Me</h2>
+        <p>Welcome to my Fun Facts About Me! Here, you'll get a glimpse into my passions, interests, and the little quirks that make me who I am.</p>
+
+        <div class="funfact-container">
+            <div class="funfact-card">
+                <div class="funfact-inner">
+                    <div class="funfact-front">
+                        <p>I TALK TO LAPTOP!</p>
+                    </div>
+                    <div class="funfact-back">
+                        <p>"Please gumana ka naman" is my daily prayer before running the code.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="funfact-card">
+                <div class="funfact-inner">
+                    <div class="funfact-front">
+                        <p>ALWAYS CURIOUS!</p>
+                    </div>
+                    <div class="funfact-back">
+                        <p>If i don't know it, I will Google, Youtube, and learn it.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="funfact-card">
+                <div class="funfact-inner">
+                    <div class="funfact-front">
+                        <p>VERY DEMURE, VERY CUTESY!</p>
+                    </div>
+                    <div class="funfact-back">
+                        <p>I don't cause chaos, I sip coffee and minding my own business.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="funfact-card">
+                <div class="funfact-inner">
+                    <div class="funfact-front">
+                        <p>GRADUATE AND GLOW UP!</p>
+                    </div>
+                    <div class="funfact-back">
+                        <p>Finish IT strong and make my family super proud.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- See More Button -->
+        <div class="see-more-container">
+            <a href="funfacts.html" class="see-more-button">See More Funfacts</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="image-section">
+            <img src="kd@-305727017.jpeg" alt="Kael's Image">
+        </div>
+        <div class="quote-section">
+            <h1>Hi, I'm Kael!</h1>
+            <p>A 2nd-year Information Technology student passionate about front-end development and creative coding. 
+               I love turning ideas into interactive, responsinve websites that are both functional and visually
+               engaging. Beyond coding, I enjoy graphic design, problem solving, and public speaking. Always Learning,
+               always building.
+            </p>
+            <blockquote>
+                "If not now, then when?"
+            </blockquote>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 John Michael Tesoro. All rights reserved.</p>
+    </footer>
+    <div class="footer-divider"></div> <!-- Striped line -->
+
+    <script>
+        // Hero slider: changes by itself with a 3D move, dots to pick a slide, pause / play
+        (function () {
+            var items = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+            var total = items.length;
+            var dotsBox = document.getElementById('sliderDots');
+            var countEl = document.getElementById('slideCount');
+            var bar = document.getElementById('sliderBar');
+            var playBtn = document.getElementById('sliderPlay');
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var DURATION = 5000;
+
+            var pos = 0;       // where the slides are drawn (smoothly chases target)
+            var target = 0;    // where they should end up
+            var raf = null, timer = null, playing = true, shownIndex = -1;
+
+            function mod(n, m) { return ((n % m) + m) % m; }
+            function wrapDelta(d) { return mod(d + total / 2, total) - total / 2; }
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function currentIndex() { return mod(Math.round(target), total); }
+
+            /* ---- dots ---- */
+            var dots = [];
+            for (var i = 0; i < total; i++) {
+                (function (n) {
+                    var d = document.createElement('button');
+                    d.type = 'button';
+                    d.className = 'slider-dot';
+                    d.setAttribute('aria-label', 'Go to slide ' + (n + 1));
+                    d.addEventListener('click', function () { goTo(n); });
+                    dotsBox.appendChild(d);
+                    dots.push(d);
+                })(i);
+            }
+
+            /* ---- draw every slide in 3D from the current position ---- */
+            function layout(blurExtra, settled) {
+                items.forEach(function (s, i) {
+                    var d = wrapDelta(i - pos);
+                    var ad = Math.abs(d);
+                    s.style.transform =
+                        'translate3d(' + (d * 100).toFixed(2) + '%,0,' + (-ad * 260).toFixed(1) + 'px) ' +
+                        'rotateY(' + (-d * 38).toFixed(2) + 'deg) scale(' + (1 - ad * 0.12).toFixed(3) + ')';
+                    s.style.opacity = Math.max(0, 1 - ad * 0.6).toFixed(3);
+                    var blur = ad * 4 + blurExtra;
+                    s.style.filter = blur < 0.2 ? 'none' : 'blur(' + blur.toFixed(2) + 'px) brightness(' + (1 - ad * 0.25).toFixed(2) + ')';
+                    s.style.zIndex = 10 - Math.round(ad * 10);
+                    s.style.visibility = (ad > 1.6 || (settled && ad > 0.995)) ? 'hidden' : 'visible';
+                    s.style.setProperty('--d', d.toFixed(3));
+                    s.style.setProperty('--ad', ad.toFixed(3));
+                });
+            }
+
+            function tick() {
+                raf = null;
+                var diff = target - pos;
+                if (reduceMotion || Math.abs(diff) < 0.0008) pos = target;
+                else pos += diff * 0.1;
+                layout(Math.min(4, Math.abs(target - pos) * 6), pos === target);
+                if (pos !== target) raf = requestAnimationFrame(tick);
+            }
+            function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+
+            /* ---- progress bar / counters ---- */
+            function restartBar() {
+                bar.style.transition = 'none';
+                bar.style.width = '0';
+                void bar.offsetWidth;
+                if (playing) {
+                    bar.style.transition = 'width ' + DURATION + 'ms linear';
+                    bar.style.width = '100%';
+                }
+            }
+            function updateUI() {
+                var idx = currentIndex();
+                if (idx === shownIndex) return;
+                shownIndex = idx;
+                items.forEach(function (it, n) { it.classList.toggle('active', n === idx); });
+                dots.forEach(function (d, n) { d.classList.toggle('active', n === idx); });
+                countEl.textContent = pad(idx + 1) + ' / ' + pad(total);
+                restartBar();
+            }
+            function schedule() {
+                clearTimeout(timer);
+                if (playing) timer = setTimeout(function () { go(1); }, DURATION);
+            }
+
+            /* ---- moving between slides ---- */
+            function go(delta) {
+                target = Math.round(target) + delta;
+                updateUI();
+                schedule();
+                kick();
+            }
+            function goTo(n) { go(wrapDelta(n - currentIndex())); }
+
+            playBtn.addEventListener('click', function () {
+                playing = !playing;
+                playBtn.textContent = playing ? 'Pause' : 'Play';
+                playBtn.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+                restartBar();
+                schedule();
+            });
+
+            layout(0, true);
+            updateUI();
+            schedule();
+        })();
+    </script>
+</body>
+</html>

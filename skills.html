@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills I'm Developing</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="fx.js" defer></script>
+    <script src="auth.js"></script>
+    <script>
+        // Only logged-in users can see this page
+        if (window.Auth) Auth.requireLogin();
+
+        // Logout with confirmation
+        function confirmLogout(event) {
+            if (event) event.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) return;
+            if (window.Auth) Auth.logout();
+            else window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>My Personal Website</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn active">ABOUT</a>
+                    <div class="dropdown-content">
+                        <a href="skills.html" class="active">Skills I'm Developing</a>
+                        <a href="goals.html">My Goals as a Student</a>
+                        <a href="funfacts.html">Fun Facts About Me</a>
+                    </div>
+                </li>
+                <li><a href="gallery.html">GALLERY</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li class="logout-item"><a href="#" class="logout-button" onclick="confirmLogout(event)">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <div class="menu-right">
+            <button type="button" class="menu-btn theme-btn" id="themeToggle"><span class="theme-ico"></span><span class="theme-txt"></span></button>
+        </div>
+    </header>
+
+    <section id="section2"></section>
+
+    <section id="drop">
+        <h2>Skills I'm Developing</h2>
+        <p>As a student, I’m actively developing a diverse set of skills that reflect my passions in technology and beyond.</p>
+
+        <div id="skills">
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'IT')">Information Technology</button>
+                <button class="tablinks" onclick="openTab(event, 'GraphicDesign')">Graphic Design</button>
+                <button class="tablinks" onclick="openTab(event, 'PublicSpeaking')">Public Speaking</button>
+                <button class="tablinks" onclick="openTab(event, 'ProblemSolving')">Problem Solving</button>
+            </div>
+
+            <div id="IT" class="tabcontent">
+                <h3>Information Technology</h3>
+                <ul>
+                    <li>I am learning front end web development using <strong>HTML, CSS, and JavaScript. </strong>I enjoy turning ideas into real websites.</li>
+                    <li>I am practicing <strong>responsive design</strong> so my websites look good on any device.</li>
+                    <li>My goal is to build modern and clean websites that are easy to use.</li>
+                </ul>
+            </div>
+
+            <div id="GraphicDesign" class="tabcontent">
+                <h3>Graphic Design</h3>
+                <ul>
+                    <li>I use tools like <strong>Canva and Figma</strong> to explore visual design. I really like cute and aesthetic layouts.</li>
+                    <li>I am learning about colors, branding, and how to make designs look balanced.</li>
+                    <li>I want to combine design and coding so my websites look good and work well.</li>
+                </ul>
+            </div>
+
+            <div id="PublicSpeaking" class="tabcontent">
+                <h3>Public Speaking</h3>
+                <ul>
+                    <li>I am working on my communication skills. I used to be shy but I am trying to be more confident.</li>
+                    <li>I practice explaining my ideas clearly, especially when presenting my projects.</li>
+                    <li>I want to be able to share my work and my thoughts without being nervous.</li>
+                </ul>
+            </div>
+
+            <div id="ProblemSolving" class="tabcontent">
+                <h3>Problem Solving and Critical Thinking</h3>
+                <ul>
+                    <li>Programming taught me how to solve problems. I enjoy fixing bugs and finding solutions.</li>
+                    <li>I try to find simple and efficient ways to make my code work better.</li>
+                    <li>I am learning to think logically and not give up when things get complicated.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 John Michael Tesoro. All rights reserved.</p>
+    </footer>
+    <div class="footer-divider"></div> <!-- Striped line -->
+
+    <script>
+        function openTab(evt, tabName) {
+            // Hide all tab content
+            const tabcontents = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontents.length; i++) {
+                tabcontents[i].style.display = "none";
+            }
+
+            // Remove "active" class from all tab buttons
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            // Show the chosen tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Initially show the first tab
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector('.tablinks').click();
+        });
+    </script>
+</body>
+</html>

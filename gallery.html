@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Personal Website</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="fx.js" defer></script>
+    <script src="auth.js"></script>
+    <script>
+        // Only logged-in users can see this page
+        if (window.Auth) Auth.requireLogin();
+
+        // Logout with confirmation
+        function confirmLogout(event) {
+            if (event) event.preventDefault();
+            if (!confirm("Are you sure you want to log out?")) return;
+            if (window.Auth) Auth.logout();
+            else window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Personal Website</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">ABOUT</a>
+                    <div class="dropdown-content">
+                        <a href="skills.html">Skills I'm Developing</a>
+                        <a href="goals.html">My Goals as a Student</a>
+                        <a href="funfacts.html">Fun Facts About Me</a>
+                    </div>
+                </li>
+                <li><a href="gallery.html" class="active">GALLERY</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li class="logout-item"><a href="#" class="logout-button" onclick="confirmLogout(event)">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <div class="menu-right">
+            <button type="button" class="menu-btn theme-btn" id="themeToggle"><span class="theme-ico"></span><span class="theme-txt"></span></button>
+        </div>
+    </header>
+
+    <section id="section2"></section>
+
+    <section id="gallery">
+        <h2>Gallery</h2>
+        <p style="text-align: center;">Check out some of the images from my recent photography:</p>
+
+        <div class="gallery deck" id="deck" tabindex="0" aria-label="Photo cards. Click any photo to enlarge and zoom it. Use the arrow buttons or swipe to browse.">
+            <div class="gallery-item">
+                <img src="dunker.jpg" alt="My Dog" class="thumbnail">
+                <p class="image-description">My favorite dog.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="flower.jpg" alt="Flower" class="thumbnail">
+                <p class="image-description">This pic been taken in mararison.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="soulsisters.jpeg" alt="Highschool Bestfriends" class="thumbnail">
+                <p class="image-description">My highschool besties!</p>
+            </div>
+            <div class="gallery-item">
+                <img src="them.jpeg" alt="College Friends" class="thumbnail">
+                <p class="image-description">College folks.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="falls.jpg" alt="Bugtong bato falls" class="thumbnail">
+                <p class="image-description">Unwinding in Bugtong bato falls.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="pom.jpg" alt="Pompompurin" class="thumbnail">
+                <p class="image-description">All time favorite SanRio Character.</p>
+            </div>
+            <!-- Add more photos by copying a gallery-item block: the deck picks them up automatically -->
+        </div>
+
+        <!-- Card deck controls -->
+        <div class="deck-ui">
+            <button type="button" class="deck-btn" id="deckPrev" aria-label="Previous photo">&#10094;</button>
+            <div class="deck-info">
+                <span class="deck-count" id="deckCount">01 / 06</span>
+                <span class="deck-caption" id="deckCaption"></span>
+            </div>
+            <button type="button" class="deck-btn" id="deckNext" aria-label="Next photo">&#10095;</button>
+        </div>
+        <div class="deck-actions">
+            <div class="deck-dots" id="deckDots"></div>
+            <button type="button" class="deck-open" id="deckOpen">View Photo</button>
+            <p class="deck-tip">Click any photo to enlarge it, then zoom in with the mouse wheel, double-click, pinch, or the + / - buttons. Swipe or drag the cards, or use the arrows, to browse.</p>
+        </div>
+    </section>
+
+
+    <!-- Lightbox (outside the window so it can cover the whole screen) -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()" role="dialog" aria-modal="true" aria-label="Image viewer">
+        <button type="button" class="close" aria-label="Close" onclick="event.stopPropagation(); closeLightbox()">&times;</button>
+        <button type="button" class="prev" aria-label="Previous image" onclick="event.stopPropagation(); changeImage(-1)">&#10094;</button>
+        <img class="lightbox-content" id="lightboxImage" src="" alt="" onclick="event.stopPropagation()">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+        <div class="lightbox-tools" onclick="event.stopPropagation()">
+            <button type="button" id="zoomOutBtn" aria-label="Zoom out">&minus;</button>
+            <span id="zoomLevel" aria-live="polite">100%</span>
+            <button type="button" id="zoomInBtn" aria-label="Zoom in">+</button>
+            <button type="button" id="zoomResetBtn" class="tool-text" aria-label="Reset zoom">Reset</button>
+        </div>
+        <button type="button" class="next" aria-label="Next image" onclick="event.stopPropagation(); changeImage(1)">&#10095;</button>
+    </div>
+
+
+    <footer>
+        <p>&copy; 2026 John Michael Tesoro. All rights reserved.</p>
+    </footer>
+    <div class="footer-divider"></div> <!-- Striped line -->
+
+    <!-- Lightbox logic lives in script.js -->
+    <script src="script.js"></script>
+</body>
+</html>

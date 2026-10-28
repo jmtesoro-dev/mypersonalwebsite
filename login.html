@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up Page</title>
+    <script>
+        // Apply the saved theme before the page paints
+        (function () {
+            try { if (localStorage.getItem('theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="login_style.css">
+    <script src="auth.js"></script>
+    <script>
+        // Safety net: if auth.js is missing from the folder, this small copy keeps the login working.
+        // (Same storage keys, so the other pages understand it too.)
+        if (!window.Auth) {
+            window.Auth = (function () {
+                var memUsers = null;
+                function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+                function set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+                function del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+                function blob() { try { if (window.name && window.name.charAt(0) === '{') return JSON.parse(window.name) || {}; } catch (e) {} return {}; }
+                function saveBlob(o) { try { window.name = JSON.stringify(o); } catch (e) {} }
+                function hashUser() {
+                    var m = /[#&]auth=([^&]*)/.exec(window.location.hash || '');
+                    try { return m ? decodeURIComponent(m[1]) : null; } catch (e) { return null; }
+                }
+                function currentUser() {
+                    var n = (get('isLoggedIn') === 'true' ? (get('currentUser') || 'user') : null) || blob().u || hashUser();
+                    return n || null;
+                }
+                return {
+                    getUsers: function () {
+                        var u = null, raw = get('users');
+                        if (raw) { try { u = JSON.parse(raw); } catch (e) {} }
+                        return u || blob().users || memUsers || {};
+                    },
+                    saveUsers: function (u) { memUsers = u; set('users', JSON.stringify(u)); var b = blob(); b.users = u; saveBlob(b); return true; },
+                    login: function (n) { set('isLoggedIn', 'true'); set('currentUser', n); var b = blob(); b.u = n; saveBlob(b); },
+                    logout: function () { del('isLoggedIn'); del('currentUser'); var b = blob(); delete b.u; saveBlob(b); window.location.href = 'login.html'; },
+                    currentUser: currentUser,
+                    isLoggedIn: function () { return !!currentUser(); },
+                    homeUrl: function () { var n = currentUser(); return 'index.html' + (n ? '#auth=' + encodeURIComponent(n) : ''); },
+                    isPersistent: function () { return set('__t', '1') && (del('__t'), true); }
+                };
+            })();
+        }
+
+        // Already logged in? Go straight to the home page
+        // (not when we were just sent here because a login was needed)
+        if (window.location.hash !== '#needlogin' && Auth.isLoggedIn()) {
+            window.location.replace(Auth.homeUrl());
+        }
+    </script>
+    <script src="fx.js" defer></script>
+</head>
+<body>
+    <div class="form-container">
+        <h2 id="formTitle">Login</h2>
+
+        <form id="authForm" autocomplete="off" novalidate>
+            <label for="username">Username</label>
+            <input type="text" id="username" autocomplete="username" autocapitalize="none" spellcheck="false">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password">
+
+            <!-- Show Password Checkbox (only for Login) -->
+            <div class="show-password" id="showPasswordContainer">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Show Password</label>
+            </div>
+
+            <!-- Confirm password field for sign-up form -->
+            <label for="confirmPassword" id="confirmPasswordLabel" style="display: none;">Confirm Password</label>
+            <input type="password" id="confirmPassword" autocomplete="new-password" style="display: none;">
+
+            <!-- Password match message -->
+            <p id="passwordMatchMessage" style="font-size: 14px; color: #f0abfc; display: none;"></p>
+
+            <button type="submit" id="submitButton">Login</button>
+            <p id="errorMessage" role="alert"></p>
+
+            <!-- Toggle link to switch between forms -->
+            <p id="toggleText">Don't have an account? <a href="#" id="toggleLink">Sign Up</a></p>
+            <p id="storageNote" style="display: none;"></p>
+        </form>
+
+        <!-- Shown after a successful login -->
+        <div id="successPanel">
+            <p id="successText">You are logged in. Taking you to the home page...</p>
+            <a class="home-link" id="homeLink" href="index.html">Go to Home</a>
+        </div>
+    </div>
+
+    <script>
+        var isLogin = true;
+
+        var form = document.getElementById('authForm');
+        var usernameInput = document.getElementById('username');
+        var passwordInput = document.getElementById('password');
+        var confirmInput = document.getElementById('confirmPassword');
+        var confirmLabel = document.getElementById('confirmPasswordLabel');
+        var matchMessage = document.getElementById('passwordMatchMessage');
+        var errorMessage = document.getElementById('errorMessage');
+        var submitButton = document.getElementById('submitButton');
+        var toggleText = document.getElementById('toggleText');
+        var showContainer = document.getElementById('showPasswordContainer');
+        var showCheckbox = document.getElementById('showPassword');
+        var formTitle = document.getElementById('formTitle');
+        var storageNote = document.getElementById('storageNote');
+        var successPanel = document.getElementById('successPanel');
+        var homeLink = document.getElementById('homeLink');
+
+        function showError(text) { errorMessage.textContent = text; }
+
+        function toast(text, ms) {
+            if (window.showToast) window.showToast(text, ms);
+        }
+
+        /* ---------- Switch between Login and Sign Up ---------- */
+        function toggleForm(event) {
+            if (event) event.preventDefault();
+
+            form.reset();
+            passwordInput.type = 'password'; // reset() does not undo "show password"
+            showError('');
+            matchMessage.style.display = 'none';
+
+            if (isLogin) {
+                formTitle.textContent = 'Sign Up';
+                confirmInput.style.display = 'block';
+                confirmLabel.style.display = 'block';
+                submitButton.textContent = 'Sign Up';
+                toggleText.innerHTML = 'Already have an account? <a href="#" id="toggleLink">Login</a>';
+                showContainer.style.visibility = 'hidden';
+                passwordInput.autocomplete = 'new-password';
+                isLogin = false;
+            } else {
+                formTitle.textContent = 'Login';
+                confirmInput.style.display = 'none';
+                confirmLabel.style.display = 'none';
+                submitButton.textContent = 'Login';
+                toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggleLink">Sign Up</a>';
+                showContainer.style.visibility = 'visible';
+                passwordInput.autocomplete = 'current-password';
+                isLogin = true;
+            }
+            usernameInput.focus();
+        }
+
+        // the link is re-created each time, so listen on its parent
+        toggleText.addEventListener('click', function (event) {
+            var target = event.target;
+            if (target && target.id === 'toggleLink') toggleForm(event);
+        });
+
+        /* ---------- After a successful login: go to the home page ---------- */
+        function goHome() {
+            var home = Auth.homeUrl();               // index.html (+ the session, so it is recognised)
+            homeLink.setAttribute('href', home);
+
+            formTitle.textContent = 'Welcome!';
+            form.style.display = 'none';
+            successPanel.style.display = 'block';
+
+            // go right away; the button above is there if the browser ever blocks the automatic move
+            setTimeout(function () { window.location.assign(home); }, 600);
+            setTimeout(function () { window.location.href = home; }, 1800);
+        }
+
+        /* ---------- Login / Sign Up ---------- */
+        function handleSubmit() {
+            var username = usernameInput.value.trim();
+            var password = passwordInput.value;
+            showError('');
+
+            if (!username || !password) {
+                showError('Please fill out all fields');
+                return;
+            }
+
+            var users = Auth.getUsers();
+            var key = 'u:' + username.toLowerCase();
+
+            if (isLogin) {
+                if (!Object.prototype.hasOwnProperty.call(users, key)) {
+                    showError('No account found. Please sign up first.');
+                } else if (users[key] !== password) {
+                    showError('Invalid username or password');
+                } else {
+                    Auth.login(username);
+                    toast('Welcome! Taking you to the home page...', 1500);
+                    goHome();
+                }
+            } else {
+                var confirmPassword = confirmInput.value;
+
+                if (Object.prototype.hasOwnProperty.call(users, key)) {
+                    showError('That username is already taken');
+                } else if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                } else {
+                    users[key] = password;
+                    Auth.saveUsers(users);
+                    toggleForm(); // back to the login form
+                    usernameInput.value = username; // handy: username already filled in
+                    toast('Account created successfully! You can now log in.', 2600);
+                }
+            }
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            handleSubmit();
+        });
+
+        /* ---------- Password helpers ---------- */
+        showCheckbox.addEventListener('change', function () {
+            passwordInput.type = showCheckbox.checked ? 'text' : 'password';
+        });
+
+        function checkPasswordMatch() {
+            if (isLogin) return;
+            var password = passwordInput.value;
+            var confirmPassword = confirmInput.value;
+
+            if (confirmPassword === '') {
+                matchMessage.style.display = 'none';
+            } else if (confirmPassword === password) {
+                matchMessage.textContent = 'Passwords match';
+                matchMessage.style.color = '#6ee7b7';
+                matchMessage.style.display = 'block';
+            } else {
+                matchMessage.textContent = 'Passwords do not match';
+                matchMessage.style.color = '#f0abfc';
+                matchMessage.style.display = 'block';
+            }
+        }
+        confirmInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        /* ---------- Heads-up if the browser blocks saved data ---------- */
+        if (!Auth.isPersistent()) {
+            storageNote.textContent = 'Your browser is not saving site data, so accounts only last while this tab stays open.';
+            storageNote.style.display = 'block';
+        }
+
+        // sent back here because a login is needed
+        if (window.location.hash === '#needlogin') {
+            showError('Please log in to see that page.');
+        }
+    </script>
+</body>
+</html>
